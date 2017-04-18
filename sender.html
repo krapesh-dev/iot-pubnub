@@ -1,0 +1,73 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PN Publisher</title>
+</head>
+<body>
+    <script type="text/javascript" src="https://cdn.pubnub.com/sdk/javascript/pubnub.4.8.0.js"></script>
+
+    <script type="text/javascript">
+        function publish() {
+            pubnub = new PubNub({
+                publishKey : 'pub-c-22665634-212a-464c-b78a-ac9dda450882',
+                subscribeKey : 'sub-c-ec3ff8be-236a-11e7-b284-02ee2ddab7fe'
+            })
+               
+            function publishSampleMessage() {
+                console.log("Since we're publishing on subscribe connectEvent, we're sure we'll receive the following publish.");
+                var publishConfig = {
+                    channel : "hello_world",
+                    message : "Hello from PubNub Docs!"
+                }
+                pubnub.publish(publishConfig, function(status, response) {
+                    console.log(status, response);
+                })
+            }
+               
+            pubnub.addListener({
+                status: function(statusEvent) {
+                    switch(statusEvent.category) {
+                        case 'PNReconnectedCategory':
+                            console.log('connected to pubnub');
+                            break;
+
+                        case 'PNNetworkUpCategory':
+                            console.log('network online');
+                            break;
+
+                        case 'PNNetworkDownCategory':
+                            console.log('network down');
+                            break;
+
+                        case 'PNNetworkIssuesCategory':
+                            console.log('subscribe exception')
+                            break;
+
+                        case  'PNConnectedCategory':
+                            console.log('subscribed with a new mix of channels (fired every time the channel / channel group mix changed).')
+                            publishSampleMessage();
+                            break;
+
+                        default:
+                            console.log('unknown error');
+                            break;
+                    }
+                },
+
+                presence: function(presenceEvent) {
+                    // handle presence
+                    console.log('PRESENCE_:', presenceEvent);
+                }
+            })
+
+            console.log("Subscribing..");
+            pubnub.subscribe({
+                channels: ['hello_world'] 
+            });
+        };
+
+        publish();
+    </script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PN Subscriber</title>
+</head>
+<body>
+    <script type="text/javascript" src="https://cdn.pubnub.com/sdk/javascript/pubnub.4.8.0.js"></script>
+
+    <script type="text/javascript">
+        function publish() {
+            pubnub = new PubNub({
+                subscribeKey : 'sub-c-ec3ff8be-236a-11e7-b284-02ee2ddab7fe'
+            })
+               
+            var pListener = pubnub.addListener({    // var required to remove listener
+                status: function(statusEvent) {
+                    switch(statusEvent.category) {
+                        case 'PNReconnectedCategory':
+                            console.log('connected to pubnub');
+                            break;
+
+                        case 'PNNetworkUpCategory':
+                            console.log('network online');
+                            break;
+
+                        case 'PNNetworkDownCategory':
+                            console.log('network down');
+                            break;
+
+                        case 'PNNetworkIssuesCategory':
+                            console.log('subscribe exception')
+                            break;
+
+                        case  'PNConnectedCategory':
+                            console.log('subscribed with a new mix of channels (fired every time the channel / channel group mix changed).')
+                            break;
+
+                        default:
+                            console.log('unknown error');
+                            break;
+                    }
+                },
+
+                message: function(message) {
+                    console.log("New Message!!", message);
+                },
+
+                presence: function(presenceEvent) {
+                    // handle presence
+                }
+            })
+
+            console.log("Subscribing..");
+            pubnub.subscribe({
+                channels: ['hello_world'] 
+            });
+        };
+
+        publish();
+    </script>
+</body>
+</html>
